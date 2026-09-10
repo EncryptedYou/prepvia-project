@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#111111">
+  <title>Prepvia — Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/src/dashboard.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand-mark" href="/dashboard.html"><span>p</span> prepvia</a>
+    <button id="logout" class="logout"><i data-lucide="log-out"></i> Log out</button>
+  </header>
+  <main class="dashboard">
+    <div class="welcome">
+      <div>
+        <div class="eyebrow">STUDENT DASHBOARD</div>
+        <h1 id="welcomeTitle">Welcome back 👋</h1>
+        <p>Your preparation starts here. Keep going.</p>
+      </div>
+      <div class="target" id="target">🎯 Target: —</div>
+    </div>
+    <section class="stats">
+      <article><span>📚</span><small>Resources</small><strong>Coming soon</strong></article>
+      <article><span>📝</span><small>Tests</small><strong>Coming soon</strong></article>
+      <article><span>🔥</span><small>Study streak</small><strong>0 days</strong></article>
+    </section>
+    <section class="next-card">
+      <div class="next-icon">🚀</div>
+      <div><h2>Your Prepvia journey is ready.</h2><p>Resources, PYQs, tests and progress tracking will appear here as we build the platform.</p></div>
+      <a href="/" class="outline">Explore</a>
+    </section>
+  </main>
+  <script type="module" src="/src/dashboard.js"></script>
+</body>
+</html>
