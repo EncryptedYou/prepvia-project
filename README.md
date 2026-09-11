@@ -1,14 +1,23 @@
-# Prepvia Authentication Starter
+# Prepvia Education Authentication
 
-Vite + Supabase authentication system for Vercel/GitHub.
+Single-page Vite + Supabase auth designed for Vercel. This version intentionally uses **one index.html** and `./src/main.js`, avoiding Vercel/Vite multi-page path-resolution issues.
 
-Includes email/password, Google OAuth, email verification, password reset, student metadata, protected dashboard, logout, profile SQL and RLS.
+## GitHub root
+index.html, package.json, supabase-schema.sql, .env.example, README.md, src/
 
-1. Create `.env` from `.env.example` with `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY`.
-2. Run `supabase-schema.sql` in Supabase SQL Editor.
-3. Enable Email and Google providers in Supabase Authentication.
-4. Configure Supabase Site URL and redirect URLs for your Vercel domain, `/dashboard.html`, and `/reset.html`.
-5. Add the environment variables in Vercel Project Settings.
-6. Run `npm install` then `npm run dev` locally, or deploy through GitHub/Vercel.
+## Supabase
+1. Create/open your Supabase project.
+2. SQL Editor -> run supabase-schema.sql.
+3. Authentication -> Providers -> enable Email and Google.
+4. Add your Vercel domain to Authentication URL Configuration and Redirect URLs.
 
-Never put a Supabase service-role/secret key in frontend code or GitHub.
+## Vercel Environment Variables
+VITE_SUPABASE_URL
+VITE_SUPABASE_PUBLISHABLE_KEY
+
+Do not put service-role/secret keys in the frontend or GitHub.
+
+## Deploy
+Vercel Build Command: npm run build
+Output: dist
+Framework: Vite
