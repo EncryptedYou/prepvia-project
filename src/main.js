@@ -1,25 +1,194 @@
 import { createClient } from '@supabase/supabase-js';
-import { createIcons, ArrowLeft, ArrowRight, UserRound, Mail, LockKeyhole, ShieldCheck, EyeOff, Eye, LogOut, Check } from 'lucide';
+import { createIcons, Mail, Lock, User, Eye, EyeOff, ArrowRight, LogOut, BookOpen, GraduationCap, CheckCircle2, Chrome, ShieldCheck } from 'lucide';
 import './auth.css';
 import './dashboard.css';
 
-const url = import.meta.env.VITE_SUPABASE_URL;
-const key = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabaseKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 const app = document.querySelector('#app');
-const icons = {ArrowLeft,ArrowRight,UserRound,Mail,LockKeyhole,ShieldCheck,EyeOff,Eye,LogOut,Check};
-if (!url || !key) { app.innerHTML='<div style="font-family:system-ui;max-width:700px;margin:60px auto;padding:24px"><h2>Supabase is not configured</h2><p>Add VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_KEY in Vercel Environment Variables, then redeploy.</p></div>'; throw new Error('Missing Supabase env'); }
-const supabase=createClient(url,key);
-let mode=new URLSearchParams(location.search).get('mode')==='signup'?'signup':'login';
-const msg=(text,type='error')=>{const e=document.querySelector('#message'); if(e){e.textContent=text;e.className='message '+type;}};
-const render=()=>{app.innerHTML=`<main class="auth-shell"><section class="auth-visual"><div class="brand-mark"><span>p</span> prepvia</div><div class="visual-content"><div class="eyebrow">JEE • NEET • YOUR PREPARATION</div><h2>Study smarter.<br><span>Reach your target.</span> 🎯</h2><p>One account for your resources, practice, progress and preparation journey.</p><div class="mini-cards"><div><b>📚</b><span>Curated Resources</span></div><div><b>🧠</b><span>Smart Practice</span></div><div><b>📈</b><span>Track Progress</span></div></div></div><div class="visual-footer">Built for aspirants who want to keep moving.</div></section><section class="auth-panel"><div class="mobile-brand"><div class="brand-mark"><span>p</span> prepvia</div></div><a class="back-link" href="/" onclick="location.href='/';return false"><i data-lucide="arrow-left"></i><span>Back</span></a><div class="auth-card"><div class="heading"><div class="welcome-icon">${mode==='signup'?'🚀':'👋'}</div><div class="eyebrow dark">${mode==='signup'?'GET STARTED':'WELCOME BACK'}</div><h1>${mode==='signup'?'Create your Prepvia account':'Sign in to Prepvia'}</h1><p>${mode==='signup'?'Create your account and start your preparation.':'Continue your preparation from where you left off.'}</p></div><div id="message" class="message"></div><form id="form" novalidate>${mode==='signup'?'<div class="field"><label>Full name</label><div class="input-wrap"><i data-lucide="user-round"></i><input id="name" type="text" autocomplete="name" placeholder="Your full name"></div></div>':''}<div class="field"><label>Email address</label><div class="input-wrap"><i data-lucide="mail"></i><input id="email" type="email" autocomplete="email" placeholder="you@example.com"></div></div>${mode==='signup'?'<div class="field"><label>Preparing for</label><div class="choice-grid"><label class="choice"><input type="radio" name="exam" value="JEE" checked><span>⚡ JEE</span></label><label class="choice"><input type="radio" name="exam" value="NEET"><span>🧬 NEET</span></label><label class="choice wide"><input type="radio" name="exam" value="Both"><span>🎯 Both JEE & NEET</span></label></div></div>':''}<div class="field"><div class="label-row"><label>Password</label>${mode==='login'?'<a id="forgot" class="forgot" href="#">Forgot password?</a>':''}</div><div class="input-wrap"><i data-lucide="lock-keyhole"></i><input id="password" type="password" autocomplete="${mode==='signup'?'new-password':'current-password'}" placeholder="Minimum 8 characters"><button type="button" class="icon-button" id="eye"><i data-lucide="eye-off"></i></button></div></div>${mode==='signup'?'<div class="field"><label>Confirm password</label><div class="input-wrap"><i data-lucide="shield-check"></i><input id="confirm" type="password" placeholder="Re-enter your password"></div></div><label class="terms"><input id="terms" type="checkbox"><span>I agree to the Terms of Use and Privacy Policy.</span></label>':''}<button class="primary-button" id="submit" type="submit"><span>${mode==='signup'?'Create account':'Sign in'}</span><i data-lucide="arrow-right"></i></button></form><div class="divider"><span>OR</span></div><button class="google-button" id="google" type="button"><span style="font-weight:900;font-size:18px">G</span><span>${mode==='signup'?'Sign up with Google':'Continue with Google'}</span></button><p class="switch-mode">${mode==='signup'?'Already have an account?':'Don\'t have an account?'} <button id="switch" type="button">${mode==='signup'?'Sign in':'Create account'}</button></p></div></section></main>`; createIcons({icons});
- document.querySelector('#switch').onclick=()=>{mode=mode==='signup'?'login':'signup';history.pushState({},'',mode==='signup'?'/?mode=signup':'/');render();};
- document.querySelector('#eye').onclick=()=>{const i=document.querySelector('#password');i.type=i.type==='password'?'text':'password';};
- document.querySelector('#form').onsubmit=submit;
- document.querySelector('#google').onclick=google;
- const f=document.querySelector('#forgot'); if(f)f.onclick=forgot;
-};
-async function submit(e){e.preventDefault();const email=document.querySelector('#email').value.trim().toLowerCase(),password=document.querySelector('#password').value;if(!email.includes('@'))return msg('Please enter a valid email address.');if(password.length<8)return msg('Password must contain at least 8 characters.');document.querySelector('#submit').disabled=true;if(mode==='signup'){const name=document.querySelector('#name').value.trim(),confirm=document.querySelector('#confirm').value;if(name.length<2)return msg('Please enter your full name.');if(password!==confirm)return msg('Passwords do not match.');if(!document.querySelector('#terms').checked)return msg('Please accept the Terms of Use and Privacy Policy.');const exam=document.querySelector('input[name="exam"]:checked').value;const {data,error}=await supabase.auth.signUp({email,password,options:{data:{full_name:name,exam},emailRedirectTo:location.origin}});document.querySelector('#submit').disabled=false;if(error)return msg(error.message);if(data.session)return location.href='/';return msg('Account created! Check your email to verify your account.','success');}const {data,error}=await supabase.auth.signInWithPassword({email,password});document.querySelector('#submit').disabled=false;if(error)return msg('Unable to sign in. Please check your email and password.');if(data.session)location.href='/';}
-async function google(){const {error}=await supabase.auth.signInWithOAuth({provider:'google',options:{redirectTo:location.origin}});if(error)msg(error.message);}
-async function forgot(e){e.preventDefault();const email=document.querySelector('#email').value.trim().toLowerCase();if(!email.includes('@'))return msg('Enter your email address first.');const {error}=await supabase.auth.resetPasswordForEmail(email,{redirectTo:location.origin+'/?reset=1'});if(error)return msg(error.message);msg('If an account exists for this email, a reset link has been sent.','success');}
-async function dashboard(session){const u=session.user,m=u.user_metadata||{};app.innerHTML=`<header class="topbar"><a class="brand-mark" href="/"><span>p</span> prepvia</a><button id="logout" class="logout"><i data-lucide="log-out"></i> Log out</button></header><main class="dashboard"><div class="welcome"><div><div class="eyebrow">STUDENT DASHBOARD</div><h1>Welcome back, ${m.full_name||m.name||u.email?.split('@')[0]||'Student'} 👋</h1><p>Your preparation starts here. Keep going.</p></div><div class="target">🎯 Target: ${m.exam||'Not set'}</div></div><section class="stats"><article><span>📚</span><small>Resources</small><strong>Coming soon</strong></article><article><span>📝</span><small>Tests</small><strong>Coming soon</strong></article><article><span>🔥</span><small>Study streak</small><strong>0 days</strong></article></section><section class="next-card"><div class="next-icon">🚀</div><div><h2>Your Prepvia journey is ready.</h2><p>Resources, PYQs, tests and progress tracking will appear here as we build the platform.</p></div></section></main>`;createIcons({icons});document.querySelector('#logout').onclick=async()=>{await supabase.auth.signOut();location.href='/';};}
-supabase.auth.getSession().then(({data:{session}})=>session?dashboard(session):render());
+
+const supabase = supabaseUrl && supabaseKey ? createClient(supabaseUrl, supabaseKey) : null;
+
+let mode = 'signin';
+let loading = false;
+
+function esc(value = '') {
+  return String(value).replace(/[&<>'"]/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', "'":'&#39;', '"':'&quot;' }[c]));
+}
+
+function message(text = '', type = '') {
+  const el = document.querySelector('#message');
+  if (!el) return;
+  el.textContent = text;
+  el.className = `message ${type}`;
+}
+
+function authView() {
+  const signup = mode === 'signup';
+  app.innerHTML = `
+    <main class="auth-page">
+      <section class="auth-card">
+        <div class="brand-row">
+          <div class="brand-mark">P</div>
+          <div>
+            <div class="brand-name">Prepvia</div>
+            <div class="brand-sub">Education</div>
+          </div>
+        </div>
+
+        <div class="hero-copy">
+          <div class="eyebrow">${signup ? 'START YOUR JOURNEY' : 'WELCOME BACK'} ✨</div>
+          <h1>${signup ? 'Create your account' : 'Welcome back'}</h1>
+          <p>${signup ? 'Build your personalised JEE & NEET study space.' : 'Sign in to continue your preparation.'}</p>
+        </div>
+
+        <div class="tabs">
+          <button class="tab ${!signup ? 'active' : ''}" data-mode="signin">Sign in</button>
+          <button class="tab ${signup ? 'active' : ''}" data-mode="signup">Sign up</button>
+        </div>
+
+        <form id="auth-form" novalidate>
+          ${signup ? `
+            <label class="field-label">Full name</label>
+            <div class="input-wrap"><span class="icon" data-lucide="user"></span><input id="name" type="text" placeholder="Your full name" autocomplete="name" required></div>
+          ` : ''}
+
+          <label class="field-label">Email</label>
+          <div class="input-wrap"><span class="icon" data-lucide="mail"></span><input id="email" type="email" placeholder="you@example.com" autocomplete="email" required></div>
+
+          <label class="field-label">Password</label>
+          <div class="input-wrap"><span class="icon" data-lucide="lock"></span><input id="password" type="password" placeholder="Your password" autocomplete="${signup ? 'new-password' : 'current-password'}" required><button type="button" class="eye" id="toggle-password" aria-label="Show password"><span data-lucide="eye"></span></button></div>
+
+          ${signup ? `
+            <label class="field-label">Confirm password</label>
+            <div class="input-wrap"><span class="icon" data-lucide="lock"></span><input id="confirm" type="password" placeholder="Repeat password" autocomplete="new-password" required></div>
+            <label class="field-label">Preparing for</label>
+            <div class="exam-grid">
+              <button type="button" class="exam active" data-exam="JEE">🎯 <span>JEE</span></button>
+              <button type="button" class="exam" data-exam="NEET">🧬 <span>NEET</span></button>
+              <button type="button" class="exam" data-exam="Both">📚 <span>Both</span></button>
+            </div>
+            <label class="terms"><input id="terms" type="checkbox"> <span>I agree to the terms and privacy policy.</span></label>
+          ` : `
+            <div class="form-row"><label class="remember"><input id="remember" type="checkbox"> Remember me</label><button type="button" class="text-button" id="forgot">Forgot password?</button></div>
+          `}
+
+          <div id="message" class="message"></div>
+          <button class="primary-btn" id="submit" type="submit">${signup ? 'Create account' : 'Sign in'} <span data-lucide="arrow-right"></span></button>
+        </form>
+
+        <div class="divider"><span>or continue with</span></div>
+        <button class="google-btn" id="google"><span data-lucide="chrome"></span> Continue with Google</button>
+
+        <div class="security"><span data-lucide="shield-check"></span> Your account is secured with Supabase Auth</div>
+        <p class="switch-text">${signup ? 'Already have an account?' : "Don't have an account?"} <button class="text-button" id="switch">${signup ? 'Sign in' : 'Create one'}</button></p>
+      </section>
+    </main>`;
+
+  createIcons({ icons: { Mail, Lock, User, Eye, EyeOff, ArrowRight, Chrome, ShieldCheck } });
+  bindAuth();
+}
+
+function bindAuth() {
+  document.querySelectorAll('[data-mode]').forEach(btn => btn.onclick = () => { mode = btn.dataset.mode; authView(); });
+  document.querySelector('#switch').onclick = () => { mode = mode === 'signin' ? 'signup' : 'signin'; authView(); };
+
+  document.querySelector('#toggle-password').onclick = () => {
+    const input = document.querySelector('#password');
+    input.type = input.type === 'password' ? 'text' : 'password';
+    document.querySelector('#toggle-password').innerHTML = `<span data-lucide="${input.type === 'password' ? 'eye' : 'eye-off'}"></span>`;
+    createIcons({ icons: { Eye, EyeOff } });
+  };
+
+  document.querySelectorAll('.exam').forEach(btn => btn.onclick = () => {
+    document.querySelectorAll('.exam').forEach(x => x.classList.remove('active'));
+    btn.classList.add('active');
+  });
+
+  document.querySelector('#google').onclick = googleLogin;
+  document.querySelector('#auth-form').onsubmit = submitAuth;
+  const forgot = document.querySelector('#forgot');
+  if (forgot) forgot.onclick = resetPassword;
+}
+
+async function submitAuth(e) {
+  e.preventDefault();
+  if (!supabase) return message('Add your Supabase environment variables in Vercel first.', 'error');
+  if (loading) return;
+  loading = true;
+  const button = document.querySelector('#submit');
+  button.disabled = true;
+  button.textContent = mode === 'signup' ? 'Creating account…' : 'Signing in…';
+
+  try {
+    const email = document.querySelector('#email').value.trim();
+    const password = document.querySelector('#password').value;
+
+    if (mode === 'signup') {
+      const name = document.querySelector('#name').value.trim();
+      const confirm = document.querySelector('#confirm').value;
+      const exam = document.querySelector('.exam.active')?.dataset.exam || 'JEE';
+      if (!name) throw new Error('Please enter your full name.');
+      if (password.length < 6) throw new Error('Password must be at least 6 characters.');
+      if (password !== confirm) throw new Error('Passwords do not match.');
+      if (!document.querySelector('#terms').checked) throw new Error('Please accept the terms to continue.');
+
+      const { data, error } = await supabase.auth.signUp({ email, password, options: { data: { full_name: name, exam } } });
+      if (error) throw error;
+      if (!data.session) message('Account created. Check your email to confirm your account.', 'success');
+      else await render();
+    } else {
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) throw error;
+      await render();
+    }
+  } catch (err) {
+    message(err.message || 'Something went wrong.', 'error');
+  } finally {
+    loading = false;
+    const b = document.querySelector('#submit');
+    if (b) { b.disabled = false; b.innerHTML = `${mode === 'signup' ? 'Create account' : 'Sign in'} <span data-lucide="arrow-right"></span>`; createIcons({ icons: { ArrowRight } }); }
+  }
+}
+
+async function googleLogin() {
+  if (!supabase) return message('Add your Supabase environment variables in Vercel first.', 'error');
+  const { error } = await supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.origin } });
+  if (error) message(error.message, 'error');
+}
+
+async function resetPassword() {
+  if (!supabase) return message('Add your Supabase environment variables in Vercel first.', 'error');
+  const email = document.querySelector('#email').value.trim();
+  if (!email) return message('Enter your email first, then tap Forgot password.', 'error');
+  const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: window.location.origin });
+  message(error ? error.message : 'Password reset email sent. Check your inbox.', error ? 'error' : 'success');
+}
+
+async function dashboard(user) {
+  const meta = user.user_metadata || {};
+  const name = meta.full_name || meta.name || user.email?.split('@')[0] || 'Student';
+  const exam = meta.exam || 'JEE';
+  app.innerHTML = `
+    <main class="dashboard-page">
+      <header class="dash-nav"><div class="brand-row"><div class="brand-mark">P</div><div><div class="brand-name">Prepvia</div><div class="brand-sub">Education</div></div></div><button id="logout" class="logout"><span data-lucide="log-out"></span> Logout</button></header>
+      <section class="dash-hero"><div class="welcome-icon">🎓</div><div><div class="eyebrow">STUDENT DASHBOARD</div><h1>Hi, ${esc(name)} 👋</h1><p>Your ${esc(exam)} preparation space is ready.</p></div></section>
+      <section class="dash-grid">
+        <div class="dash-card"><span class="card-icon">📚</span><h2>Resources</h2><p>Books, notes, PYQs and study material.</p><span class="coming">Coming next</span></div>
+        <div class="dash-card"><span class="card-icon">📝</span><h2>Tests</h2><p>Practice tests and performance tracking.</p><span class="coming">Coming next</span></div>
+        <div class="dash-card"><span class="card-icon">📊</span><h2>Analytics</h2><p>Understand your strengths and weak areas.</p><span class="coming">Coming next</span></div>
+      </section>
+      <div class="account-strip"><span data-lucide="check-circle-2"></span><div><strong>Account active</strong><small>${esc(user.email || '')}</small></div></div>
+    </main>`;
+  createIcons({ icons: { LogOut, CheckCircle2, BookOpen, GraduationCap } });
+  document.querySelector('#logout').onclick = async () => { await supabase.auth.signOut(); render(); };
+}
+
+async function render() {
+  if (!supabase) return authView();
+  const { data: { session } } = await supabase.auth.getSession();
+  if (session?.user) await dashboard(session.user); else authView();
+}
+
+if (supabase) supabase.auth.onAuthStateChange((_event, session) => { if (session?.user) dashboard(session.user); });
+render();
